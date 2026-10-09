@@ -47,3 +47,9 @@ studiomdl.log
 bin/
 obj/
 
+
+# mdlcc MSVC outputs
+bin/
+obj/
+*.pdb
+
