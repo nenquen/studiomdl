@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: build.bat (${{ matrix.config }}) + smoke
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Release, Debug]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tool versions
+        run: |
+          python --version
+          try { & py -3 --version } catch { 'no py launcher' }
+          powershell $PSVersionTable.PSVersion
+          exit 0
+      - name: Build with pure MSVC (cl.exe, no MSBuild)
+        run: cmd /c build.bat ${{ matrix.config }} x64
+      - name: List output
+        run: dir bin/${{ matrix.config }}
+      - name: Smoke test (Release only)
+        if: matrix.config == 'Release'
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File test/smoke.ps1 -Exe bin/Release/studiomdl.exe
