@@ -3,6 +3,7 @@
 #include "studiomdl.hpp"
 
 #include <algorithm>
+#include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -2691,6 +2692,11 @@ static int compile_one(const std::filesystem::path &qc_input_path)
 
 int main(int argc, char **argv)
 {
+	// Unbuffered output: on a crash (e.g. bad input via drag-and-drop),
+	// buffered progress text would otherwise be lost.
+	setvbuf(stdout, nullptr, _IONBF, 0);
+	std::cout << std::unitbuf;
+
 	bool force_pause = false;
 	bool force_nopause = false;
 	bool saw_flag = false;
